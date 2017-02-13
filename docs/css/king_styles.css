@@ -1,0 +1,151 @@
+body {
+	background-color: lightgray;
+}
+h1 {
+	font-family: 'Cinzel', serif;
+	text-align: center;
+	margin: 5px;
+}
+#game-screen {
+	margin: auto;
+	width: 800px;
+	height: 600px;
+	position: relative;
+	background-color: white;
+	border: 1px solid black;
+}
+#hero-banner {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+}
+#hero-stat-display {
+	position: absolute;
+	top: 18px;
+	left: 86px;
+	font-size: 90%;
+	font-family: 'Cinzel', serif;
+	/*font-weight: bold;*/
+}
+#hero-stat-display p {
+	color: black;
+	padding: 0;
+	margin: 0;
+}
+#hero-stat-display div{
+	width: 100px;
+	height: 8px;
+}
+.bar-outline {
+	background-color: gray;
+	border: 1px solid gray;
+}
+#hp-bar {
+	background-color: green;
+	margin-bottom: 2px;
+}
+#mp-bar {
+	background-color: #00A4DB;
+}
+canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+#target-box div {
+	position: absolute;
+	top: 150px;
+	width: 130px;
+	height: 200px;
+	z-index: 2;
+}
+#target0 {
+	left: 275px;
+}
+#target1 {
+	left: 405px;
+}
+#target2 {
+	left: 535px;
+}
+#target3 {
+	left: 665px;
+}
+#ability-box {
+	position: absolute;
+	top: 423px;
+	left: 47px;
+	height: 156px;
+	width: 320px;
+}
+.ability-icon {
+	float: left;
+	height: 70px;
+	width: 70px;
+	margin: 5px;
+	background-color: red;
+}
+#float-box div {
+	position: absolute;
+	top: 140px;
+	width: 110px;
+	font-family: arial;
+	color: red;
+	font-size: 3em;
+	font-weight: bold;
+	text-align: center;
+}
+#float-box #player-float {
+	width: 170px;
+}
+#float0 {
+	left: 275px;
+}
+#float1 {
+	left: 405px;
+}
+#float2 {
+	left: 535px;
+}
+#float3 {
+	left: 665px;
+}
+#info-panel {
+	position: absolute;
+	top: 424px;
+	left: 375px;
+	height: 140px;
+	width: 355px;
+	padding: 8px;
+	background-color: #f7f1ad;
+	border: 1px solid black;
+}
+#battle-header {
+	position: absolute;
+	font-size: xx-large;
+	top: 65px;
+	left: 0;
+	opacity: 0;
+}
+#descrip-box {
+	font-family: 'Open Sans Condensed', sans-serif;
+	width: 650px;
+	background-color: white;
+	border: 1px solid black;
+	margin: 30px auto 30px auto;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+#descrip-box h2 {
+	font-family: 'Cinzel', serif;
+	margin: 20px 0 10px 0;
+}
+#descrip-box p {
+	margin: 10px 0 10px 0;
+}
+.hidden {
+	display: none;
+}
+/*.hidden canvas {
+	display: none;
+}*/

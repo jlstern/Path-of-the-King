@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sword version 0.4.4</title>
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+	<!-- <script src="sword_images.js"</script> -->
+</head>
+<body>
+	<!-- Screen covers & pop-ups -->
+	<canvas id="loadCanvas" width="800px" height="600px"></canvas>
+	<div id="screenCover" class="popUp hidden"></div>
+	<div id="popUpMenu" class="popUp hidden">
+		<h2 id="popUpMenuHeader">Level up!</h2>
+		<div id="pathChoiceBox">
+			<img class="pathChoice" src="">
+			<img class="pathChoice" src="">
+			<img class="pathChoice" src="">
+		</div>
+		<div id="popUpMenuTextBox" class="popUp">
+			<div id="popUpBlocker">
+				<h3 id="popUpPathName"></h3>
+			</div>
+			<p class="popUpSubHeader popUp">Choose your path wisely...</p>
+			<p id="popUpText" class="popUpMenuBody popUp"> Depending on which path you choose, your stats will grow differently. New paths will be available every time you level up. Hover over each icon to learn about its associated skill.</p>
+		</div>
+	</div>
+	<!-- Battlefield -->
+	<div id="upperPanel">
+			<canvas id="background" width="800px" height="400px"></canvas>
+		<div class="statBox">
+			<canvas id="statCanvas" height="100px" width="800px"></canvas>
+			<div class="statDisplay">
+				<p><span class="heroName"></span> - Level <span class="level"></span></p>
+				<p>HP: <span class="hpCurrent"></span>/<span class="hpTotal"></span></p>
+				<p>Magic: <span class="mpCurrent"></span>/<span class="mpTotal"></span></p>
+			</div>
+		</div>
+		<!-- Pop-up alert canvas -->
+		<canvas id="expCanvas" height="100px" width="800px"></canvas>
+		<canvas id="healCanvas" height="100px" width="800px"></canvas>
+		<canvas class="popCanvas" height="100px" width="800px"></canvas>
+		<canvas class="popCanvas" height="100px" width="800px"></canvas>
+		<canvas class="popCanvas" height="100px" width="800px"></canvas>
+		<canvas class="popCanvas" height="100px" width="800px"></canvas>
+		<canvas class="popCanvas" height="100px" width="800px"></canvas>
+		<div class="charBox">
+		<!-- Character canvases -->
+			<canvas class="heroCanvas charCanvas" height="350px" width="800px"></canvas>	
+			<canvas class="enemyCanvas charCanvas" height="350px" width="800px"></canvas>
+			<canvas class="enemyCanvas charCanvas" height="350px" width="800px"></canvas>
+			<canvas class="enemyCanvas charCanvas" height="350px" width="800px"></canvas>
+			<canvas class="enemyCanvas charCanvas" height="350px" width="800px"></canvas>
+			<canvas id="fxCanvas" class ="charCanvas" height="350px" width="800px"></canvas>
+		<!-- Hitboxes -->
+			<div id="enemy0" class="enemyTarget"></div>
+			<div id="enemy1" class="enemyTarget"></div>
+			<div id="enemy2" class="enemyTarget"></div>
+			<div id="enemy3" class="enemyTarget"></div>
+		</div>
+	</div>
+	<!-- Lower section -->
+	<div id="lowerPanel">
+		<img id="lowerBackground" src="images/background/lower_half.png">
+		<div id="leftMargin"></div>
+		<!-- Lower left -->
+		<div id="lowerLeft">
+			<img id="buttonAdvance" class="abilityBlock" src="images/icons/advance.png">
+			<img id="buttonSlice" class="abilityBlock" src="images/icons/slice.png">
+			<img id="buttonBurst" class="abilityBlock" src="images/icons/burst.png">
+			<img id="buttonHeal" class="abilityBlock" src="images/icons/heal.png">
+			<div class="abilityBlock hidden"></div>
+			<div class="abilityBlock hidden"></div>
+			<div class="abilityBlock hidden"></div>
+			<div class="abilityBlock hidden"></div>
+		</div>
+		<!-- Lower right -->
+		<div class="lowerRight">
+				<h3 class="heroPath"></h3>
+				<p>Weapon Defense: <span class="wepDef"></span>%</p>
+				<p>Magic Defense: <span class="magDef"></span>%</p>
+				<p>Speed: <span class="speed"></span></p>
+				<p>Exp to next level: <span class="expToLvl"></span></p>
+		</div>
+		<!-- Ability descriptions -->
+		<div class="lowerRight abilityDescrip hidden">
+			<strong>Advance</strong>
+			<p>Moves player forward. Can only be used outside of battle.</p><br>
+			<p><em>Onward!</em></p>
+		</div>
+		<div class="lowerRight abilityDescrip hidden">
+			<strong>Slice</strong>
+			<p>Type: Weapon Attack</p>
+			<p>Damage: 3</p>
+			<p>Magic Cost: 0</p><br>
+			<p><em>Classic swing of the 'ole sword</em></p>
+		</div>
+		<div class="lowerRight abilityDescrip hidden">
+			<strong>Burst</strong>
+			<p>Type: Magic Spell</p>
+			<p>Damage: 5</p>
+			<p>Magic Cost: 3</p><br>
+			<p><em>Big burst of magic-- right in the face</em></p>
+		</div>
+		<div class="lowerRight abilityDescrip hidden">
+			<strong>Heal</strong>
+			<p>Type: Magic Spell</p>
+			<p>Damage: 0</p>
+			<p>Magic Cost: 6</p><br>
+			<p><em>Heals 10 HP when you need it most</em></p>
+		</div>
+
+		<!-- Enemy stat displays -->
+
+		<div id="rightMargin"></div>
+	</div>
+	<!-- Stat display -->
+	<div id="oldDisplay">
+		<div id="hero0" class="displayBlock">
+			<p>Hero0 Name: <span class="heroName"></span></p>
+			<p>Hit Points: <span class="hpCurrent"></span>/<span class="hpTotal"></span></p>
+			<p>Magic: <span class="mpCurrent"></span>/<span class="mpTotal"></span></p>
+			<p>Speed: <span class="speed"></span></p>
+			<p>Weapon Defense: <span class="wepDef"></span></p>
+			<p>Magic Defense: <span class="magDef"></span></p>
+			<p>Status: <span class="status"></span></p>
+			<p>Level: <span class="level"></span></p>
+			<p>Exp to next level: <span class="expToLvl"></span></p>
+		</div>
+		<div class="enemyTarget displayBlock">
+			<p>Enemy0 Name: <span class="enemyName"></span></p>
+			<p>Hit Points: <span class="enemyHPCurrent"></span>/<span class="enemyHPTotal"></span></p>
+			<p>Speed: <span class="enemySpeed"></span></p>
+			<p>Weapon Defense: <span class="enemyWepDef"></span></p>
+			<p>Magic Defense: <span class="enemyMagDef"></span></p>
+			<p>Status: <span class="enemyStatus"></span></p>
+		</div>
+		<div class="enemyTarget displayBlock">
+			<p>Enemy1 Name: <span class="enemyName"></span></p>
+			<p>Hit Points: <span class="enemyHPCurrent"></span>/<span class="enemyHPTotal"></span></p>
+			<p>Speed: <span class="enemySpeed"></span></p>
+			<p>Weapon Defense: <span class="enemyWepDef"></span></p>
+			<p>Magic Defense: <span class="enemyMagDef"></span></p>
+			<p>Status: <span class="enemyStatus"></span></p>
+		</div>
+		<div class="enemyTarget displayBlock">
+			<p>Enemy2 Name: <span class="enemyName"></span></p>
+			<p>Hit Points: <span class="enemyHPCurrent"></span>/<span class="enemyHPTotal"></span></p>
+			<p>Speed: <span class="enemySpeed"></span></p>
+			<p>Weapon Defense: <span class="enemyWepDef"></span></p>
+			<p>Magic Defense: <span class="enemyMagDef"></span></p>
+			<p>Status: <span class="enemyStatus"></span></p>
+		</div>
+		<div class="enemyTarget displayBlock">
+			<p>Enemy3 Name: <span class="enemyName"></span></p>
+			<p>Hit Points: <span class="enemyHPCurrent"></span>/<span class="enemyHPTotal"></span></p>
+			<p>Speed: <span class="enemySpeed"></span></p>
+			<p>Weapon Defense: <span class="enemyWepDef"></span></p>
+			<p>Magic Defense: <span class="enemyMagDef"></span></p>
+			<p>Status: <span class="enemyStatus"></span></p>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<script type="text/javascript" src="js/index.js"></script>
+</body>
+</html>

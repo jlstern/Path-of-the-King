@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Path of the King</title>
+	<link href="https://fonts.googleapis.com/css?family=Cinzel:400,700|Open+Sans+Condensed:300" rel="stylesheet">
+	<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+  <link rel="stylesheet" type="text/css" href="css/king_styles.css">
+</head>
+<body>
+	<h1>~ Path of the King ~</h1>
+	<div id="game-screen">
+		<div id="battlefield" class="hidden">
+			<canvas id="background-canvas" width="800" height="600"></canvas>
+			<div id="float-box">
+				<div id="player-float"></div>
+				<div id="float0" class="enemy-float"></div>
+				<div id="float1" class="enemy-float"></div>
+				<div id="float2" class="enemy-float"></div>
+				<div id="float3" class="enemy-float"></div>
+			</div>
+			<img id="hero-banner" src="images/other/hero_stat_banner.png">
+			<div id="hero-stat-display">
+				<p><strong>Health: </strong><span id="current-hp"></span>/<span id="total-hp"></span></p>
+				<div class="bar-outline">
+					<div id="hp-bar"></div>
+				</div>
+				<p><strong>Magic: </strong><span id="current-mp"></span>/<span id="total-mp"></span></p>
+				<div class="bar-outline">
+					<div id="mp-bar"></div>
+				</div>
+			</div>
+			<canvas class="enemy-ani-canvas" width="800" height="600"></canvas>
+			<canvas class="enemy-ani-canvas" width="800" height="600"></canvas>
+			<canvas class="enemy-ani-canvas" width="800" height="600"></canvas>
+			<canvas class="enemy-ani-canvas" width="800" height="600"></canvas>
+			<canvas id="player-ani-canvas" width="800" height="600"></canvas>
+			<canvas id="fx-canvas" width="800" height="600"></canvas>
+			<canvas class="enemy-dam-canvas" width="800" height="600"></canvas>
+			<canvas class="enemy-dam-canvas" width="800" height="600"></canvas>
+			<canvas class="enemy-dam-canvas" width="800" height="600"></canvas>
+			<canvas class="enemy-dam-canvas" width="800" height="600"></canvas>
+			<canvas id="player-dam-canvas" width="800" height="600"></canvas>
+			<div id="target-box" class="hidden">
+				<div id="target0"></div>
+				<div id="target1"></div>
+				<div id="target2"></div>
+				<div id="target3"></div>
+			</div>
+			<div id="ability-box">
+				<img id="ability-slice" class="ability-icon" src="images/icons/slice.png">
+				<img id="ability-burst" class="ability-icon" src="images/icons/burst.png">
+				<img id="ability-heal" class="ability-icon" src="images/icons/heal.png">
+				<img class="ability-icon hidden">
+				<img class="ability-icon hidden">
+				<img class="ability-icon hidden">
+				<img class="ability-icon hidden">
+				<img class="ability-icon hidden">
+			</div>
+			<div id="battle-header"><h2>BEGIN BATTLE!</h2></div>
+			<div id="info-panel"></div>
+		</div>
+		<div id="world-map">
+			<canvas id="map-canvas" width="800" height="600"></canvas>
+			<canvas id="player-canvas" width="800" height="600"></canvas>
+		</div>
+		<canvas id="transition-canvas" class="hidden" width="800" height="600"></canvas>
+		<canvas id="load-canvas" width="800" height="600"></canvas>
+	</div>
+	<div id="descrip-box">
+		<h2>How to play</h2>
+		<p>You have been trapped in a labyrinth by your enemies. It will take everything you have to escape and reclaim your throne!</p>
+		<p>Use the arrow keys or WASD keys to navigate the labyrinth. While exploring the labyrinth, you will be periodically attacked by monsters. Use your mouse to select which ability to use and then click on an enemy to target them. As you progress through battles you will have a chance to level up. Every level will improve your stats and grant you new abilities. Choose wisely. </p>
+		<p>The game ends when you reach the end of the maze and manage to recclaim your throne. Beware, if you fall in combat, you will have to start over at the beginning.</p>
+		<h2>About Path of the King</h2>
+		<p>Path of the King is a turn-based RPG inspired by 90's RPG classics, such as Dragon Warrior, Final Fantasy, and Legend of Zelda.</p>
+		<p>This game was designed and built by Jacob Stern using HTML5, CSS, JavaScript, jQuery, and Google Fonts. All character animations were drawn by Zachary A.L. Stern. This game was made purely for fun and to practice programming with JavaScript.</p>
+	</div>
+	<script type="text/javascript" src="js/king.js"></script>
+</body>
+</html>
