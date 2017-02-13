@@ -50,16 +50,27 @@
 				<div id="target3"></div>
 			</div>
 			<div id="ability-box">
-				<img id="ability-slice" class="ability-icon" src="images/icons/slice.png">
-				<img id="ability-burst" class="ability-icon" src="images/icons/burst.png">
-				<img id="ability-heal" class="ability-icon" src="images/icons/heal.png">
-				<img class="ability-icon hidden">
-				<img class="ability-icon hidden">
-				<img class="ability-icon hidden">
-				<img class="ability-icon hidden">
-				<img class="ability-icon hidden">
+				<img class="ability-slice ability-icon" src="images/icons/slice.png">
+				<img class="ability-burst ability-icon" src="images/icons/burst.png">
+				<img class="ability-heal ability-icon" src="images/icons/heal.png">
+				<img class="ability-icon locked-ability hidden">
+				<img class="ability-icon locked-ability hidden">
+				<img class="ability-icon locked-ability hidden">
+				<img class="ability-icon locked-ability hidden">
+				<img class="ability-icon locked-ability hidden">
 			</div>
-			<div id="battle-header"><h2>BEGIN BATTLE!</h2></div>
+			<div id="end-battle-panel" class="notification-board hidden"></div>
+			<div id="level-up-panel" class="notification-board hidden">
+				<h2>Level Up!</h2>
+				<div>
+					<img id="choice1">
+					<img id="choice2">
+					<img id="choice3">
+				</div>
+				<p>Select one of the above abilities to level up. Choose wisely. Depending on which ability you choose now, you will grow differently and different abilities will be available in the future.</p>
+			</div>
+			<h2 id="battle-header"></h2>
+			<h3 id="battle-sub-header"></h2>
 			<div id="info-panel"></div>
 		</div>
 		<div id="world-map">

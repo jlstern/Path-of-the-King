@@ -103,15 +103,22 @@ var player = {
 
 // List of abilities
 
-// Level of sequence
+// Level up sequence
+masterPathList = [
+{
+	index: 0,
+	name: "Path of the Novice",
+	nextPath: [1, 2, 3]
+},
 
+]
 
 ////////////////////////////////////////////////////////
 // 03 - Enemy object and encounter logic
 ////////////////////////////////////////////////////////
 // Enemy object
 var encounterMasterList = [
-	[1, 2, 3, 0],
+	[0, 2, 0, 0],
 	[1, 2, 0, 0],
 	[1, 1, 1, 0]
 ]
@@ -244,6 +251,48 @@ function beginEncounter(encounterNum){
 	drawTransition(openBattlefield, playerDrawSword);
 }
 
+function openBattleHeader(insertString, duration){
+	$("#battle-header").text(insertString);
+	var width = $("#battle-header").css("width");
+	var numWidth = Number(width.slice(0, -2));
+	$("#battle-header").animate({
+		left: (400-numWidth/2)+"px",
+		opacity: "1",
+	}, function(){
+		setTimeout(function(){
+			var width = $("#battle-header").css("width");
+			var numWidth = Number(width.slice(0, -2));
+			$("#battle-header").animate({
+				left: (800-numWidth)+"px",
+				opacity: "0",
+			}).animate({
+				left: "0"
+			})
+		}, duration);
+	});
+}
+
+function openBattleSubHeader(insertString, duration){
+	$("#battle-sub-header").text(insertString);
+	var width = $("#battle-sub-header").css("width");
+	var numWidth = Number(width.slice(0, -2));
+	$("#battle-sub-header").animate({
+		left: (400-numWidth/2)+"px",
+		opacity: "1",
+	}, function(){
+		setTimeout(function(){
+			var width = $("#battle-sub-header").css("width");
+			var numWidth = Number(width.slice(0, -2));
+			$("#battle-sub-header").animate({
+				left: (800-numWidth)+"px",
+				opacity: "0",
+			}).animate({
+				left: "0"
+			})
+		}, duration);
+	});
+}
+
 function drawIdlePlayerSheathed(){
 	clearInterval(animatePlayer);
 	var ctx = $("#player-ani-canvas")[0].getContext("2d");
@@ -259,10 +308,7 @@ function drawIdlePlayerSheathed(){
 }
 
 function playerDrawSword(){
-	$("#battle-header").animate({
-		left: "220px",
-		opacity: "1",
-	});
+	openBattleHeader("BEGIN BATTLE!", 1300);
 	clearInterval(animatePlayer);
 	var ctx = $("#player-ani-canvas")[0].getContext("2d");
 	player.frame = 0
@@ -271,21 +317,13 @@ function playerDrawSword(){
 		ctx.drawImage(playerImg, player.frame*200, 800, 200, 200, player.dx, 150, 200, 200);
 		player.frame++;
 		if(player.frame >= 8){
-			setTimeout(function(){
-				$("#battle-header").animate({
-					left: "440px",
-					opacity: "0",
-				}).animate({
-					left: "0"
-				});
-			}, 1000);
 			drawIdlePlayer();
 			beginTurnRotation();
 		}
 	}, 100);
 }
 
-function playerSheathSword(){
+function playerSheathSword(endFunc){
 	clearInterval(animatePlayer);
 	var ctx = $("#player-ani-canvas")[0].getContext("2d");
 	player.frame = 0
@@ -295,6 +333,7 @@ function playerSheathSword(){
 		player.frame++;
 		if(player.frame >= 4){
 			drawIdlePlayerSheathed();
+			endFunc();
 		}
 	}, 200);
 }
@@ -355,7 +394,7 @@ function beginTurnRotation(){
 		}
 		console.log("Enemies remaining: " + enemiesRemaining);
 		if(enemiesRemaining === 0){
-			return endEncounter();
+			return playerSheathSword(endEncounter);
 		}
 		// return player or enemy turns
 		else if(turnOrder[currentTurn].type === "player"){
@@ -373,6 +412,7 @@ function beginTurnRotation(){
 
 function playerTurn(){
 	console.log("Player turn");
+	openBattleSubHeader("~ Player Turn ~", 2800);
 	player.mpCurr += player.mpRegen;
 	if(player.mpCurr > player.mpTotal){
 		player.mpCurr = player.mpTotal
@@ -382,18 +422,18 @@ function playerTurn(){
 }
 
 function turnOnAbilityButtons(){
-	$("#ability-slice").on("click", playerSlice);
-	$("#ability-burst").on("click", playerBurst);
-	$("#ability-heal").on("click", playerHeal);
+	$(".ability-slice").on("click", playerSlice);
+	$(".ability-burst").on("click", playerBurst);
+	$(".ability-heal").on("click", playerHeal);
 			// set variables for damage
 		// set variables for animation
 		// turn on targetting reticules
 }
 
 function turnOffAbilityButtons(){
-	$("#ability-slice").off("click", playerSlice);
-	$("#ability-burst").off("click", playerBurst);
-	$("#ability-heal").off("click", playerHeal);
+	$(".ability-slice").off("click", playerSlice);
+	$(".ability-burst").off("click", playerBurst);
+	$(".ability-heal").off("click", playerHeal);
 };
 
 // LIST OF PLAYER ABILITY FUNCTIONS
@@ -503,6 +543,7 @@ function burstFX(){
 		ctx.drawImage(burstImg, fxFrame*200, 0, 200, 200, 220+target*130, 150, 200, 200);
 		fxFrame++;
 		if(fxFrame > 5){
+			ctx.clearRect(0, 0, 800, 600);
 			clearInterval(animateFX);
 		}
 	}, 200);
@@ -824,8 +865,49 @@ function playerFlinch(){
 
 // END ENCOUNTER
 function endEncounter(){
-	openWorldMap()
+	player.exp += expPool;
+	expPool = 0;
+	if(player.exp >= 75 && player.level === 4){
+		return openLevelUpWindow();
+	}
+	else if(player.exp >= 35 && player.level === 3){
+		return openLevelUpWindow();
+	}
+	else if(player.exp >= 15 && player.level === 2){
+		return openLevelUpWindow();
+	}
+	else if(player.exp >= 5 && player.level === 1){
+		return openLevelUpWindow();
+	}
+	else{
+		// end of battle text, click anywhere to return to world map
+	}
+	// openWorldMap()
 }
+
+// LEVEL UP
+function openLevelUpWindow(){
+	if(player.path === 0){
+		// $(choice1).addClass("ability-slice");
+		// choice1.src = "images/icons/slice.png"
+		// $(choice2).addClass("ability-burst");
+		// choice2.src = "images/icons/burst.png"
+		// $(choice3).addClass("ability-heal");
+		// choice3.src = "images/icons/heal.png"
+	}
+	$("#level-up-panel").removeClass("hidden");
+}
+
+$("#choice1").on("click", levelUp(0));
+// $("#choice2").on("click", levelUp(1));
+// $("#choice3").on("click", levelUp(2));
+
+function levelUp(newPathChoice){
+	player.path = masterPathList[player.path].nextPath[newPathChoice];
+	$(".locked-ability")[player.path];
+}
+
+
 
 function openWorldMap(){
 	$("#battlefield").addClass("hidden");

@@ -85,6 +85,38 @@ canvas {
 	margin: 5px;
 	background-color: red;
 }
+.notification-board {
+	position: absolute;
+	top: 100px;
+	left: 200px;
+	height: 275px;
+	width: 500px;
+	background-color: lightgray;
+	border: 3px solid black;
+	text-align: center;
+}
+.notification-board h2 {
+	font-family: 'Cinzel', serif;
+	font-size: xx-large;
+	margin-top: 5px;
+}
+.notification-board div {
+	width: 300px;
+	height: 80px;
+	margin: auto;
+}
+#level-up-panel p {
+	font-family: 'Open Sans Condensed', sans-serif;
+	width: 400px;
+	margin: 20px auto;
+}
+#level-up-panel div img {
+	float: left;
+	width: 70px;
+	height: 70px;
+	background-color: red;
+	margin: 0 15px;
+}
 #float-box div {
 	position: absolute;
 	top: 140px;
@@ -121,6 +153,17 @@ canvas {
 	border: 1px solid black;
 }
 #battle-header {
+	font-family: 'Cinzel', serif;
+	text-align: center;
+	position: absolute;
+	font-size: xx-large;
+	top: 5px;
+	left: 0;
+	opacity: 0;
+}
+#battle-sub-header {
+	font-family: 'Cinzel', serif;
+	text-align: center;
 	position: absolute;
 	font-size: xx-large;
 	top: 65px;
