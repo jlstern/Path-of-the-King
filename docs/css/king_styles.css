@@ -78,12 +78,11 @@ canvas {
 	height: 156px;
 	width: 320px;
 }
-.ability-icon {
+#ability-box img {
 	float: left;
 	height: 70px;
 	width: 70px;
 	margin: 5px;
-	background-color: red;
 }
 .notification-board {
 	position: absolute;
@@ -114,7 +113,6 @@ canvas {
 	float: left;
 	width: 70px;
 	height: 70px;
-	background-color: red;
 	margin: 0 15px;
 }
 #float-box div {

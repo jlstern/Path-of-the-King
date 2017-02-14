@@ -25,14 +25,6 @@
 	var vikingImg = new Image(1000, 1000);
 	vikingImg.src = "images/char_strips/viking_strip.png";
 
-	// Icons
-	var sliceIcon = new Image(1667, 1667);
-	sliceIcon.src = "images/icons/slice.png";
-	var burstIcon = new Image(1667, 1667);
-	burstIcon.src = "images/icons/burst.png";
-	var healIcon = new Image(1667, 1667);
-	healIcon.src = "images/icons/heal.png";
-
 	// FX
 	var burstImg = new Image(1200, 200);
 	burstImg.src = "images/fx/burst_strip.png";
@@ -83,8 +75,8 @@ var player = {
 	name: "King",
 	type: "player",
 	// stats
-	hpCurr: 20,
-	hpTotal: 20,
+	hpCurr: 25,
+	hpTotal: 25,
 	mpCurr: 10,
 	mpTotal: 10,
 	mpRegen: 1,
@@ -102,42 +94,128 @@ var player = {
 	dx: 0,
 	dy: 0,
 	// overworld and movement
-	x: 0,
-	y: 0,
+	x: 1,
+	y: 1,
 	direction: 0,
 	step: 0,
 	terrain: 0
 }
 
-// List of abilities
+// LIST OF PLAYER ABILITY FUNCTIONS
+function playerSlice(){
+	console.log("Slice selected")
+	ability.dmg = 5;
+	ability.type = "weapon";
+	ability.cost = 0;
+	ability.bonus = nullFunc;
+	ability.fx = nullFunc;
+	$("#target-box").removeClass("hidden");
+}
 
-// Level up sequence
+function playerBurst(){
+	console.log("Burst selected");
+	if(player.mpCurr < 4){
+		return openBattleSubHeader("Not enough magic!", 1000);
+	}
+	ability.dmg = 8;
+	ability.type = "magic";
+	ability.cost = 4;
+	ability.bonus = nullFunc;
+	ability.fx = burstFX
+	$("#target-box").removeClass("hidden");
+}
+
+function playerHeal(){
+	console.log("Heal");
+	if(player.mpCurr < 6){
+		return openBattleSubHeader("Not enough magic!", 1000);
+	}
+	player.mpCurr -= 6;
+	player.hpCurr += 8;
+	if(player.hpCurr > player.hpTotal){
+		player.hpCurr = player.hpTotal
+	}
+	refreshHeroDisplay();
+	setTimeout(function(){
+		currentTurn++;
+		beginTurnRotation();
+	}, 400)
+};
+
+function playerWildSwing(){
+	console.log("Wild Swing selected");
+	ability.dmg = Math.floor((Math.random() * 8) + 3);
+	if(ability.dmg === 3){
+		ability.dmg = 2
+	}
+	else if(ability.dmg === 8){
+		ability.dmg = 10
+	}
+	ability.type = "weapon";
+	ability.cost = 0;
+	ability.bonus = nullFunc;
+	ability.fx = nullFunc;
+	$("#target-box").removeClass("hidden");
+}
+
+function playerMagicGust(){
+	console.log("Magic Gust selected");
+}
+
+// SETUP ABILITIES
+function setIconImages(){
+	$(".ability-slice").attr("src", "images/icons/slice.png");
+	$(".ability-burst").attr("src", "images/icons/burst.png");
+	$(".ability-heal").attr("src", "images/icons/heal.png");
+	$(".ability-wild-swing").attr("src", "images/icons/slice.png");
+	$(".ability-magic-gust").attr("src", "images/icons/burst.png");
+	$(".ability-everlasting").attr("src", "images/icons/heal.png");
+}
+
+function turnOnAbilityButtons(){
+	$(".ability-slice").on("click", playerSlice);
+	$(".ability-burst").on("click", playerBurst);
+	$(".ability-heal").on("click", playerHeal);
+	$(".ability-wild-swing").on("click", playerWildSwing);
+	$(".ability-magic-gust").on("click", playerMagicGust);
+}
+
+function turnOffAbilityButtons(){
+	$(".ability-slice").off("click", playerSlice);
+	$(".ability-burst").off("click", playerBurst);
+	$(".ability-heal").off("click", playerHeal);
+	$(".ability-wild-swing").off("click", playerWildSwing);
+	$(".ability-magic-gust").off("click", playerMagicGust);
+}
+
+// LEVEL UP SEQUENCE
 masterPathList = [
 {
 	index: 0,
 	name: "Path of the Novice",
+	lv: 1,
 	nextPath: [1, 2, 3]
 },
 {
 	index: 1,
 	name: "Path of the Fox",
-	nextPath: [],
-	img: sliceIcon,
-	imgClass: 
+	lv: 2,
+	nextPath: [1, 2, 3],
+	className: "ability-wild-swing"
 },
 {
 	index: 2,
 	name: "Path of the Wind",
-	nextPath: [],
-	img: burstIcon,
-	imgClass: 
+	lv: 2,
+	nextPath: [1, 2, 3],
+	className: "ability-magic-gust"
 },
 {
 	index: 3,
 	name: "Path of Stone",
-	nextPath: [],
-	img: healIcon,
-	imgClass: 
+	lv: 2,
+	nextPath: [1, 2, 3],
+	className: "ability-everlasting"
 },
 ]
 
@@ -186,7 +264,7 @@ var enemy = [
 		wepMod: 0,
 		magMod: 0,
 		speed: 1,
-		exp: 1,
+		exp: 2,
 		// attack logic
 		attackChance: [35, 65],
 		attackFunc: [enemySqueal, enemyAxeSwing],
@@ -208,7 +286,7 @@ var enemy = [
 		wepMod: 0,
 		magMod: 0,
 		speed: 1,
-		exp: 5,
+		exp: 1,
 		// attack logic
 		attackChance: [100],
 		attackFunc: [enemyPeck],
@@ -273,6 +351,7 @@ function beginEncounter(encounterNum){
 		turnOrder.push(turnOrderPrelim[highestIndex]);
 		turnOrderPrelim.splice(highestIndex, 1);
 	}
+	currentTurn = 0;
 	refreshHeroDisplay();
 	drawAllIdleEnemies();
 	drawIdlePlayerSheathed();
@@ -420,7 +499,7 @@ function beginTurnRotation(){
 				enemiesRemaining++;
 			}
 		}
-		console.log("Enemies remaining: " + enemiesRemaining);
+		// console.log("Enemies remaining: " + enemiesRemaining);
 		if(enemiesRemaining === 0){
 			return playerSheathSword(endEncounter);
 		}
@@ -440,52 +519,21 @@ function beginTurnRotation(){
 
 function playerTurn(){
 	console.log("Player turn");
-	openBattleSubHeader("~ Player Turn ~", 2800);
+	openBattleSubHeader("~ Player Turn ~", 1800);
 	player.mpCurr += player.mpRegen;
 	if(player.mpCurr > player.mpTotal){
 		player.mpCurr = player.mpTotal
 	}
+	// Everlasting
+	if($(".locked-ability").hasClass("ability-everlasting")){
+		player.hpCurr = Math.floor(player.hpCurr*1.2);
+		if(player.hpCurr > player.hpTotal){
+			player.hpCurr = player.hpTotal
+		}
+	}
 	refreshHeroDisplay();
 	turnOnAbilityButtons();
 }
-
-function turnOnAbilityButtons(){
-	$(".ability-slice").on("click", playerSlice);
-	$(".ability-burst").on("click", playerBurst);
-	$(".ability-heal").on("click", playerHeal);
-			// set variables for damage
-		// set variables for animation
-		// turn on targetting reticules
-}
-
-function turnOffAbilityButtons(){
-	$(".ability-slice").off("click", playerSlice);
-	$(".ability-burst").off("click", playerBurst);
-	$(".ability-heal").off("click", playerHeal);
-};
-
-// LIST OF PLAYER ABILITY FUNCTIONS
-function playerSlice(){
-	console.log("Slice selected")
-	ability.dmg = 5;
-	ability.type = "weapon";
-	ability.cost = 0;
-	ability.bonus = nullFunc;
-	ability.fx = nullFunc;
-	$("#target-box").removeClass("hidden");
-}
-
-function playerBurst(){
-	console.log("Burst selected");
-	ability.dmg = 8;
-	ability.type = "magic";
-	ability.cost = 4;
-	ability.bonus = nullFunc;
-	ability.fx = burstFX
-	$("#target-box").removeClass("hidden");
-}
-
-function playerHeal(){};
 
 // TARGETTING MECHANICS
 for(i = 0; i < 4; i++){
@@ -893,6 +941,9 @@ function playerFlinch(){
 
 // END ENCOUNTER
 function endEncounter(){
+	// Refresh turn order
+	turnOrder = [];
+	// Grant exp to player
 	player.exp += expPool;
 	expPool = 0;
 	if(player.exp >= 75 && player.level === 4){
@@ -908,74 +959,168 @@ function endEncounter(){
 		return openLevelUpWindow();
 	}
 	else{
-		// end of battle text, click anywhere to return to world map
+		setTimeout(function(){
+			openBattleSubHeader("Click anywhere to continue...", 2500);
+			$("#game-screen").on("click", openWorldMap);
+		}, 50);
 	}
-	// openWorldMap()
 }
 
 // LEVEL UP
+$("#choice1").on("click", function(){
+	levelUp(0)
+});
+$("#choice2").on("click", function(){
+	levelUp(1)
+});
+$("#choice3").on("click", function(){
+	levelUp(2)
+});
+
 function openLevelUpWindow(){
-	if(player.path === 0){
-		// $(choice1).addClass("ability-slice");
-		// choice1.src = "images/icons/slice.png"
-		// $(choice2).addClass("ability-burst");
-		// choice2.src = "images/icons/burst.png"
-		// $(choice3).addClass("ability-heal");
-		// choice3.src = "images/icons/heal.png"
+	for(i = 0; i < 3; i++){
+		var p = masterPathList[player.path].nextPath[i];
+		$("#choice"+(i+1)).addClass(masterPathList[p].className);
 	}
+	setIconImages();
 	$("#level-up-panel").removeClass("hidden");
 }
 
-$("#choice1").on("click", levelUp(0));
-// $("#choice2").on("click", levelUp(1));
-// $("#choice3").on("click", levelUp(2));
-
 function levelUp(newPathChoice){
+	$("#level-up-panel").addClass("hidden");
+	for(i = 0; i < 3; i++){
+		$("#choice"+(i+1)).removeClass();
+	}
 	player.path = masterPathList[player.path].nextPath[newPathChoice];
-	$(".locked-ability")[player.path];
+	var locked = $(".locked-ability");
+	$(locked[player.level-1]).addClass(
+		masterPathList[player.path].className
+	).removeClass(
+		"hidden"
+	);
+	setIconImages();
+	player.level = masterPathList[player.path].lv;
+	endEncounter();
 }
-
-
 
 function openWorldMap(){
-	$("#battlefield").addClass("hidden");
-	$("#world-map").removeClass("hidden");
-	movementOn = true;
+	$("#game-screen").off("click", openWorldMap);
+	var ctx = $("#transition-canvas")[0].getContext("2d");
+	ctx.globalAlpha = 0;
+	ctx.fillStyle = "black";
+	transitionCount = 0;
+	$("#transition-canvas").removeClass("hidden");
+	var transition = setInterval(function(){
+		transitionCount++;
+		ctx.globalAlpha = transitionCount/10;
+		ctx.clearRect(0, 0, 800, 600);
+		ctx.fillRect(0, 0, 800, 600);
+		if(transitionCount === 10){
+			clearInterval(transition);
+			$("#battlefield").addClass("hidden");
+			$("#world-map").removeClass("hidden");
+			transition = setInterval(function(){
+				transitionCount--;
+				ctx.globalAlpha = transitionCount/10;
+				ctx.clearRect(0, 0, 800, 600);
+				ctx.fillRect(0, 0, 800, 600);
+				if(transitionCount === 0){
+					clearInterval(transition);
+					$("#transition-canvas").addClass("hidden");
+					movementOn = true;
+				}
+			}, 50);
+		}
+	}, 50);
 }
-
-
-
-
-
-
 
 ////////////////////////////////////////////////////////
 // 05 - Map and overworld movement
 ////////////////////////////////////////////////////////
+// var oldMap = [
+// 	[ // room 0
+// 		[0, "E00", 1, 0, 0, 0, 1, 0, 0, "D01A", 1, 0, 0, 0, 0, 1],
+// 		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+// 		[1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+// 		[1, "E00", 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+// 		[0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+// 		[0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0],
+// 		[0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0],
+// 		[0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0],
+// 		[1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+// 		[1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+// 		[0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1],
+// 		[0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+// 	],
+// 	[ // room 1
+// 		[0, 0, 0, 0, 0, 0, 0, 0],
+// 		[0, 0, 1, 0, 0, 2, 0, 0],
+// 		[0, 0, 0, 0, 0, 0, 0, 0],
+// 		[0, 0, 0, 0, 0, 0, 0, 0],
+// 		[0, 0, 1, 0, 0, 1, 0, 0],
+// 		["D00A", 0, 0, 1, 1, 0, 0, 0]
+// 	]
+// ];
+
 var map = [
-	[ // room 0
-		[0, "E00", 1, 0, 0, 0, 1, 0, 0, "D01A", 1, 0, 0, 0, 0, 1],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
-		[1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-		[1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-		[0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0],
-		[0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0],
-		[1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-		[1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-		[0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1],
-		[0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+	[  // room 0
+		[1, 1, 1, 1, 1, "D03Q", 1, "D03N", 1, "D01P", 1, "D03O", 1, 1, "D01T", 1],
+		[1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+		[1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, "D02D"],
+		[1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1],
+		[1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+		[1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, "D02C"],
+		[1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1],
+		[1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+		[1, 1, "D01E", 1, 1, "D01R", 1, "D01H", 1, 1, 1, 1, 1, "D01B", 1, 1]
 	],
-	[ // room 1
-		[0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 1, 0, 0, 2, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 0, 0, 0, 0, 0, 0],
-		[0, 0, 1, 0, 0, 1, 0, 0],
-		["D00A", 0, 0, 1, 1, 0, 0, 0]
+	[  // room 1
+		[1, 1, "D00E", 1, 1, "D00R", 1, "D00H", 1, 1, 1, 1, 1, "D00B", 1, 1],
+		[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+		[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, "D03G"],
+		[1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1],
+		[1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+		[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+		[1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
+		[1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, "D03H"],
+		[1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+		["D03J", 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, "D00P", 1, 1, 1, 1, "D00T", 1]
+	],
+	[ // room 2
+		[1, 1, 1, 1, 1, 1, 1, 1, "D03S", 1, 1, 1, 1, 1, 1, 1],
+		["D00D", 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1],
+		[1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+		["D00C", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+		[1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1],
+		[1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+		[1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+		[1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+		[1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+		[1, 1, "D03M", 1, "D03L", 1, 1, 1, "D03K", 1, 1, "D03I", 1, 1, "D03F", 1]
+	],
+	[ // room 3
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+		[1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+		[1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 	]
 ];
+
 
 function unitSize(){
 	if(800/map[room][0].length === 600/map[room].length){
@@ -1027,6 +1172,7 @@ function drawTransition(midFunc, endFunc){
 	var ctx = $("#transition-canvas")[0].getContext("2d");
 	ctx.fillStyle = "cornflowerblue";
 	transitionCount = 0;
+	ctx.globalAlpha = 1;
 	var transition = setInterval(function(){
 		transitionCount++;
 		ctx.beginPath();
@@ -1048,7 +1194,6 @@ function drawTransition(midFunc, endFunc){
 					ctx.globalAlpha = 1;
 					transitionCount = 0;
 					$("#transition-canvas").addClass("hidden");
-					movementOn = true;
 					setTimeout(function(){
 						endFunc();
 					}, 50)
@@ -1099,6 +1244,7 @@ function checkPlayerTerrain(){
 		}
 		if(terrain.charAt(0) === "E"){
 			beginEncounter(Number(terrain.charAt(1) + terrain.charAt(2)));
+			map[room][player.y][player.x] = 0;
 		}
 	}
 	else{
@@ -1225,6 +1371,7 @@ function loadGame(){
 	drawPlayerIcon();
 	drawBackground();
 	checkKeyPress();
+	setIconImages();
 }
 
 // Initialize
