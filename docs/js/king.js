@@ -23,7 +23,15 @@
 	var birdImg = new Image(1000, 800);
 	birdImg.src = "images/char_strips/bird_strip.png";
 	var vikingImg = new Image(1000, 1000);
-	vikingImg.src = "images/char_strips/viking_strip.png"
+	vikingImg.src = "images/char_strips/viking_strip.png";
+
+	// Icons
+	var sliceIcon = new Image(1667, 1667);
+	sliceIcon.src = "images/icons/slice.png";
+	var burstIcon = new Image(1667, 1667);
+	burstIcon.src = "images/icons/burst.png";
+	var healIcon = new Image(1667, 1667);
+	healIcon.src = "images/icons/heal.png";
 
 	// FX
 	var burstImg = new Image(1200, 200);
@@ -110,7 +118,27 @@ masterPathList = [
 	name: "Path of the Novice",
 	nextPath: [1, 2, 3]
 },
-
+{
+	index: 1,
+	name: "Path of the Fox",
+	nextPath: [],
+	img: sliceIcon,
+	imgClass: 
+},
+{
+	index: 2,
+	name: "Path of the Wind",
+	nextPath: [],
+	img: burstIcon,
+	imgClass: 
+},
+{
+	index: 3,
+	name: "Path of Stone",
+	nextPath: [],
+	img: healIcon,
+	imgClass: 
+},
 ]
 
 ////////////////////////////////////////////////////////
@@ -180,7 +208,7 @@ var enemy = [
 		wepMod: 0,
 		magMod: 0,
 		speed: 1,
-		exp: 2,
+		exp: 5,
 		// attack logic
 		attackChance: [100],
 		attackFunc: [enemyPeck],
