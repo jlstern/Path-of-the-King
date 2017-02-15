@@ -542,7 +542,6 @@ for(i = 0; i < 4; i++){
 			turnOffAbilityButtons();
 			$("#target-box").addClass("hidden");
 			target = $(this).index();
-			calculateDamage();
 			if(ability.type === "weapon"){
 				playerUseSword(ability.fx);
 			}
@@ -554,17 +553,11 @@ for(i = 0; i < 4; i++){
 }
 
 // CALCULATE DAMAGE
-function calculateDamage(){
 	player.mpCurr -= ability.cost;
 	if(ability.type === "weapon"){
-		displayDmg = ability.dmg-Math.ceil(ability.dmg*(enemyTeam[target].wepDef/100))
 	}
 	else if(ability.type === "magic"){
-		displayDmg = ability.dmg-Math.ceil(ability.dmg*(enemyTeam[target].magDef/100));
 	}
-	enemyTeam[target].hpCurr -= displayDmg;
-	if(enemyTeam[target].hpCurr <= 0){
-		expPool += enemyTeam[target].exp;
 	}
 }
 
@@ -654,7 +647,6 @@ function playerUseSword(swordFX){
 				else if(player.step === 1){
 					refreshHeroDisplay();
 					swordFX();
-					enemyFlinch();
 				}
 				else if(player.step > 5 && player.step < 6){
 					player.frame--;
@@ -698,7 +690,6 @@ function playerCastSpell(spellFX){
 			spellFX();
 		}
 		else if(player.frame > 4){
-			enemyFlinch();
 			drawIdlePlayer();
 			currentTurn++;
 			beginTurnRotation();
@@ -707,31 +698,16 @@ function playerCastSpell(spellFX){
 	}, 200);
 }
 
-function enemyFlinch(){
 	flinchOK = false;
-	clearInterval(animateEnemy[target]);
-	var ctx = $(".enemy-ani-canvas")[target].getContext("2d");
 	ctx.clearRect(0, 0, 800, 600);
-	ctx.drawImage(enemyTeam[target].image, 800, 0, 200, 200, 200+target*130, 150, 200, 200);
-	floatEnemyDamage(target);
 	setTimeout(function(){
-		if(enemyTeam[target].hpCurr <= 0){
-			clearInterval(animateEnemy[target]);
-			enemyTeam[target].frame = 10;
-			animateEnemy[target] = setInterval(function(){
-				enemyTeam[target].frame--;
-				ctx.globalAlpha = enemyTeam[target].frame/10;
 				ctx.clearRect(0, 0, 800, 600);
-				ctx.drawImage(enemyTeam[target].image, 800, 0, 200, 200, 200+target*130, 150, 200, 200);
-				if(enemyTeam[target].frame <= 0){
-					clearInterval(animateEnemy[target]);
 					ctx.globalAlpha = 1;
 					flinchOK = true;
 				}
 			}, 60);
 		}
 		else{
-			drawIdleEnemy(target);
 			flinchOK = true;
 		}
 	}, 350);
@@ -1074,11 +1050,8 @@ var map = [
 		[1, 0, 0, "E00", 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
 		[1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-		[1, 0, "E01", 0, 0, "E03", 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-		[1, 1, "D01E", 1, 1, "D01R", 1, "D01H", 1, 1, 1, 1, 1, "D01B", 1, 1]
 	],
 	[  // room 1
-		[1, 1, "D00E", 1, 1, "D00R", 1, "D00H", 1, 1, 1, 1, 1, "D00B", 1, 1],
 		[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
 		[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, "D03G"],
 		[1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1],
@@ -1106,7 +1079,6 @@ var map = [
 		[1, 1, "D03M", 1, "D03L", 1, 1, 1, "D03K", 1, 1, "D03I", 1, 1, "D03F", 1]
 	],
 	[ // room 3
-		[1, 1, 1, 1, "D00L", 1, "D02L", 1, "D02M", 1, 1, "D02I", 1, 1, "D02F", 1],
 		[1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
 		["D01G", 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
 		[1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
