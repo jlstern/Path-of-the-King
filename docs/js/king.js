@@ -55,6 +55,14 @@
 	var flinchOK = true; // checks to make sure flinch animation is complete
 	var fxOK = true; // checks to make sure FX animation is complete
 
+	// Level up
+	var redLv = 0;
+	var bluLv = 0;
+	var yelLv = 0;
+	var orgLv = 0;
+	var purLv = 0;
+	var greLv = 0;
+
 	// Overworld and movement
 	var room = 0;
 	var movementOn = true;
@@ -76,15 +84,15 @@ var player = {
 	type: "player",
 	// stats
 	hpCurr: 25,
-	hpTotal: 25,
+	hpTotal: 25 + Math.floor(redLv*5 + purLv*2.5 + bluLv*5 + greLv*7.5 + yelLv*10 + orgLv*7.5),
 	mpCurr: 10,
-	mpTotal: 10,
-	mpRegen: 1,
-	wepDef: 0,
-	magDef: 0,
+	mpTotal: 10 + Math.floor(redLv*2 + purLv*4 + bluLv*6 + greLv*8 + yelLv*6 + orgLv*4),
+	mpRegen: 1 + Math.floor(redLv*0.5 + purLv*0.75 + bluLv*1 + greLv*0.75 + yelLv*0.5 + orgLv*0.25),
+	wepDef: Math.floor(redLv*7.5 + purLv*5 + bluLv*2.5 + greLv*5 + yelLv*7.5 + orgLv*10),
+	magDef: Math.floor(redLv*2.5 + purLv*5 + bluLv*7.5 + greLv*10 + yelLv*7.5 + orgLv*5),
 	wepMod: 0,
 	magMod: 0,
-	speed: 2,
+	speed: 2 + Math.floor(redLv*1.5 + purLv*2 + bluLv*1.5 + greLv*1 + yelLv*0.5 + orgLv*1),
 	exp: 0,
 	level: 1,
 	path: 0,
@@ -160,6 +168,21 @@ function playerWildSwing(){
 
 function playerMagicGust(){
 	console.log("Magic Gust selected");
+	if(player.mpCurr < 5){
+		return openBattleSubHeader("Not enough magic!", 1000);
+	}
+	player.mpCurr -= 5;
+	ability.cost = 0;
+	ability.dmg = 4;
+	ability.type = "magic";
+	target = "all";
+	ability.bonus = nullFunc;
+	for(i = 0; i < enemyTeam.length; i++){
+		if(enemyTeam[i].hpCurr > 0){
+			calculateDamage(i);
+		}
+	}
+	playerCastSpell(nullFunc);
 }
 
 // SETUP ABILITIES
@@ -199,6 +222,7 @@ masterPathList = [
 {
 	index: 1,
 	name: "Path of the Fox",
+	type: "red",
 	lv: 2,
 	nextPath: [1, 2, 3],
 	className: "ability-wild-swing"
@@ -206,6 +230,7 @@ masterPathList = [
 {
 	index: 2,
 	name: "Path of the Wind",
+	type: "blue",
 	lv: 2,
 	nextPath: [1, 2, 3],
 	className: "ability-magic-gust"
@@ -213,11 +238,34 @@ masterPathList = [
 {
 	index: 3,
 	name: "Path of Stone",
+	type: "yellow",
 	lv: 2,
 	nextPath: [1, 2, 3],
 	className: "ability-everlasting"
 },
 ]
+
+function increaseStats(){
+	if(masterPathList[player.path].type === "red"){
+		redLv++;
+	}
+	else if(masterPathList[player.path].type === "blue"){
+		bluLv++;
+	}
+	else if(masterPathList[player.path].type === "green"){
+		greLv++;
+	}
+	else if(masterPathList[player.path].type === "orange"){
+		orgLv++;
+	}
+	else if(masterPathList[player.path].type === "yellow"){
+		yelLv++;
+	}
+	else if(masterPathList[player.path].type === "purple"){
+		purLv++;
+	}
+}
+
 
 ////////////////////////////////////////////////////////
 // 03 - Enemy object and encounter logic
@@ -263,7 +311,7 @@ var enemy = [
 		magDef: 0,
 		wepMod: 0,
 		magMod: 0,
-		speed: 1,
+		speed: 2,
 		exp: 2,
 		// attack logic
 		attackChance: [35, 65],
@@ -282,11 +330,11 @@ var enemy = [
 		hpCurr: 5,
 		hpTotal: 5,
 		wepDef: 0,
-		magDef: 40,
+		magDef: 30,
 		wepMod: 0,
 		magMod: 0,
-		speed: 1,
-		exp: 1,
+		speed: 3,
+		exp: 2,
 		// attack logic
 		attackChance: [100],
 		attackFunc: [enemyPeck],
@@ -307,7 +355,7 @@ var enemy = [
 		magDef: -20,
 		wepMod: 0,
 		magMod: 0,
-		speed: 0,
+		speed: 1,
 		exp: 3,
 		// attack logic
 		attackChance: [30, 70],
@@ -542,6 +590,7 @@ for(i = 0; i < 4; i++){
 			turnOffAbilityButtons();
 			$("#target-box").addClass("hidden");
 			target = $(this).index();
+			calculateDamage(target);
 			if(ability.type === "weapon"){
 				playerUseSword(ability.fx);
 			}
@@ -553,16 +602,23 @@ for(i = 0; i < 4; i++){
 }
 
 // CALCULATE DAMAGE
+function calculateDamage(ind){
 	player.mpCurr -= ability.cost;
 	if(ability.type === "weapon"){
+		displayDmg = ability.dmg-Math.ceil(ability.dmg*(enemyTeam[ind].wepDef/100))
 	}
 	else if(ability.type === "magic"){
+		displayDmg = ability.dmg-Math.ceil(ability.dmg*(enemyTeam[ind].magDef/100));
 	}
+	enemyTeam[ind].hpCurr -= displayDmg;
+	if(enemyTeam[ind].hpCurr <= 0){
+		expPool += enemyTeam[ind].exp;
 	}
 }
 
 // REFRESH PLAYER DISPLAY
 function refreshHeroDisplay(){
+	// refresh stat bars
 	$("#current-hp").text(player.hpCurr);
 	$("#total-hp").text(player.hpTotal);
 	$("#current-mp").text(player.mpCurr);
@@ -580,6 +636,8 @@ function refreshHeroDisplay(){
 	$("#mp-bar").animate({
 		width: (player.mpCurr/player.mpTotal)*100+"px"
 	});
+	// refresh main info panel
+	
 }
 
 // FLOAT DAMAGE
@@ -647,6 +705,7 @@ function playerUseSword(swordFX){
 				else if(player.step === 1){
 					refreshHeroDisplay();
 					swordFX();
+					enemyFlinch(target);
 				}
 				else if(player.step > 5 && player.step < 6){
 					player.frame--;
@@ -690,6 +749,16 @@ function playerCastSpell(spellFX){
 			spellFX();
 		}
 		else if(player.frame > 4){
+			if(target === "all"){
+				for(i = 0; i < enemyTeam.length; i++){
+					if(enemyTeam[i].hpCurr > 0){
+						enemyFlinch(i);
+					}
+				}
+			}
+			else {
+				enemyFlinch(target);
+			}
 			drawIdlePlayer();
 			currentTurn++;
 			beginTurnRotation();
@@ -698,16 +767,31 @@ function playerCastSpell(spellFX){
 	}, 200);
 }
 
+function enemyFlinch(ind){
 	flinchOK = false;
+	clearInterval(animateEnemy[ind]);
+	var ctx = $(".enemy-ani-canvas")[ind].getContext("2d");
 	ctx.clearRect(0, 0, 800, 600);
+	ctx.drawImage(enemyTeam[ind].image, 800, 0, 200, 200, 200+ind*130, 150, 200, 200);
+	floatEnemyDamage(ind);
 	setTimeout(function(){
+		if(enemyTeam[ind].hpCurr <= 0){
+			clearInterval(animateEnemy[ind]);
+			enemyTeam[ind].frame = 10;
+			animateEnemy[ind] = setInterval(function(){
+				enemyTeam[ind].frame--;
+				ctx.globalAlpha = enemyTeam[ind].frame/10;
 				ctx.clearRect(0, 0, 800, 600);
+				ctx.drawImage(enemyTeam[ind].image, 800, 0, 200, 200, 200+ind*130, 150, 200, 200);
+				if(enemyTeam[ind].frame <= 0){
+					clearInterval(animateEnemy[ind]);
 					ctx.globalAlpha = 1;
 					flinchOK = true;
 				}
 			}, 60);
 		}
 		else{
+			drawIdleEnemy(ind);
 			flinchOK = true;
 		}
 	}, 350);
@@ -968,6 +1052,7 @@ function levelUp(newPathChoice){
 		$("#choice"+(i+1)).removeClass();
 	}
 	player.path = masterPathList[player.path].nextPath[newPathChoice];
+	increaseStats();
 	var locked = $(".locked-ability");
 	$(locked[player.level-1]).addClass(
 		masterPathList[player.path].className
@@ -1050,8 +1135,11 @@ var map = [
 		[1, 0, 0, "E00", 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
 		[1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+		[1, 0, "E01", 0, 0, "E02", 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+		[1, 1, "D01E", 1, 1, "D01R", 1, "D01A", 1, 1, 1, 1, 1, "D01B", 1, 1]
 	],
 	[  // room 1
+		[1, 1, "D00E", 1, 1, "D00R", 1, "D00A", 1, 1, 1, 1, 1, "D00B", 1, 1],
 		[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
 		[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, "D03G"],
 		[1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1],
@@ -1079,6 +1167,7 @@ var map = [
 		[1, 1, "D03M", 1, "D03L", 1, 1, 1, "D03K", 1, 1, "D03I", 1, 1, "D03F", 1]
 	],
 	[ // room 3
+		[1, 1, 1, 1, "D00O", 1, "D02L", 1, "D02M", 1, 1, "D02I", 1, 1, "D02F", 1],
 		[1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
 		["D01G", 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
 		[1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
@@ -1213,6 +1302,7 @@ function checkPlayerTerrain(){
 	if(typeof(terrain) === "string"){
 		if(terrain.charAt(0) === "D"){
 			openDoor(Number(terrain.charAt(1) + terrain.charAt(2)), terrain.charAt(3))
+			console.log(Number(terrain.charAt(1) + terrain.charAt(2)), terrain.charAt(3))
 		}
 		if(terrain.charAt(0) === "E"){
 			beginEncounter(Number(terrain.charAt(1) + terrain.charAt(2)));
@@ -1237,6 +1327,7 @@ function openDoor(newRoom, door){
 						$("#transition-canvas").removeClass("hidden");
 						var ctx = $("#transition-canvas")[0].getContext("2d");
 						ctx.fillStyle = "gray";
+						ctx.globalAlpha = 1;
 						transitionCount = 0;
 						var transition = setInterval(function(){
 							ctx.fillRect(0, 0, transitionCount*30, 600);
