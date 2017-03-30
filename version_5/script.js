@@ -10,7 +10,7 @@ var player = {
 
 var map = [
 	[ // room 0
-		[1, 1, 1, 1, "A", 1, 0, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+		[1, 1, 1, 1, 4, 1, 0, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -31,7 +31,7 @@ var map = [
 // 1 = walkable floor
 // 2 = ladder
 // 3 = wall
-// string = door
+// 4 = door
 
 // Interval Variables
 var animatePlayerIcon;
@@ -138,7 +138,7 @@ function checkKeyPress(){
 				movePlayer(0, -1);
 			}
 			// Go through door
-			else if(typeof(map[room][player.y][player.x]) === "string"){
+			else if(map[room][player.y][player.x] === 4){
 				console.log("Enter Door");
 			}
 		}
